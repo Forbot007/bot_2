@@ -1,0 +1,4 @@
+build:
+  builder: NIXPACKS
+  environment:
+    PYTHON_VERSION: "3.12"
