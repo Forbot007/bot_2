@@ -4,15 +4,19 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 from dotenv import load_dotenv
 
+# Загружаем переменные окружения из файла .env
 load_dotenv()
 
+# Получаем токены из переменных окружения
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 GIGACHAT_API_KEY = os.getenv("GIGACHAT_API_KEY")
 GIGACHAT_URL = os.getenv("GIGACHAT_URL", "https://api.gigachat.dev/generate")
 
+# Создаём объекты бота и диспетчера
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 
+# Обработчик команды /start
 @dp.message(Command("start"))
 async def start_handler(message: types.Message):
     await message.answer(
@@ -20,6 +24,7 @@ async def start_handler(message: types.Message):
         "Напиши тему, по которой хочешь решать задачи (например, 'квадратные уравнения')."
     )
 
+# Функция для генерации задачи через API
 async def generate_task(topic: str) -> str:
     prompt = f"Сгенерируй задачу по математике для подготовки к ОГЭ на тему: {topic}. Только текст задачи, без решений."
     headers = {"Authorization": f"Bearer {GIGACHAT_API_KEY}"}
@@ -32,15 +37,18 @@ async def generate_task(topic: str) -> str:
         else:
             return "Ошибка при генерации задачи."
 
+# Обработчик сообщений от пользователя
 @dp.message()
 async def task_handler(message: types.Message):
     topic = message.text
     task = await generate_task(topic)
     await message.answer(f"Реши задачу:\n{task}")
 
+# Основная функция для запуска бота
 async def main():
     await dp.start_polling(bot)
 
+# Запускаем бота
 if __name__ == "__main__":
     import asyncio
     asyncio.run(main())
